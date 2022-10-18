@@ -56,4 +56,4 @@ def run_cohort_analysis(file: str, start_time: datetime, num_weeks: int):
 
 if __name__ == '__main__':
     run_cohort_analysis('/Users/spatra/PycharmProjects/pipeline-dbr-utils/main/cohort_analysis/dataset.tsv',
-                        "2018-04-07 7:07:17", 2)
+                        "2018-04-07 7:07:17", 3)
