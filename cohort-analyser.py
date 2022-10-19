@@ -45,15 +45,29 @@ def run_cohort_analysis(file: str, start_time: datetime, num_weeks: int):
         .agg(F.first('num_customers')) \
         .orderBy(['first_week'])
 
-    # weekly_cohorts.show(weekly_cohorts.count(), truncate=False)
+    weekly_cohorts.show(weekly_cohorts.count(), truncate=False)
 
-    weekly_cohorts.coalesce(1).write.mode('overwrite')\
-        .options(header='True', delimiter='\t')\
-        .csv("/Users/spatra/PycharmProjects/pipeline-dbr-utils/main/cohort_analysis/cohort_output")
+    # weekly_cohorts.coalesce(1).write.mode('overwrite')\
+    #     .options(header='True', delimiter='\t')\
+    #     .csv("/Users/spatra/PycharmProjects/pipeline-dbr-utils/main/cohort_analysis/cohort_output")
+
+    ## SQL way - WIP
+    # weekly_cohorts.registerTempTable('cohort')
+    # weekly_cohorts = spark.sql("""
+    #    select cohort.timestamp, count(distinct cohort.custID) as active_users,
+    #    count(distinct future_cohort.custID) as retained_users,
+    #    count(distinct future_cohort.custID)/count(distinct cohort.custID) as retention
+    #    from cohort
+    #    left join cohort as future_cohort
+    #        on cohort.custID = future_cohort.custID
+    #        and cohort.timestamp = future_cohort.timestamp - interval '1 week'
+    #    group by cohort.timestamp
+    #    """)
+    # weekly_cohorts.show(truncate=False)
 
     spark.stop()
 
 
 if __name__ == '__main__':
     run_cohort_analysis('/Users/spatra/PycharmProjects/pipeline-dbr-utils/main/cohort_analysis/dataset.tsv',
-                        "2018-04-07 7:07:17", 3)
+                        "2018-04-07 7:07:17", 2)
